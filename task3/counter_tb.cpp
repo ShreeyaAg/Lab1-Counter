@@ -23,8 +23,7 @@ int main (int argc, char **argv, char**env){
     //initalize simulation inputs 
     top->clk = 1;
     top->rst = 1;
-    top->en = 0;
-
+     // remove enable 
     //run simulation for many clock cycles 
    
 
@@ -35,17 +34,20 @@ int main (int argc, char **argv, char**env){
                 top->clk = !top->clk;
                 top->eval();
             }
-
             // Send coint value to Vbuddy
             vbdHex(4, (int(top->count)>>12)& 0xF);
             vbdHex(3, (int(top->count)>>8)& 0xF);
             vbdHex(2, (int(top->count)>>4)& 0xF);
             vbdHex(1, int(top->count) & 0xF);
+            top->v = vbdValue();
+            vbdSetMode(1);
+            //keeps the counter running when value is set
+            // add top v into the clock cycle so that you vdc value updates with the clock 
             vbdCycle(i+1);
 
 
             top->rst = (i<2)|(i==15);
-            top->en =  vbdFlag();
+            top->ld =  vbdFlag();
             if (Verilated::gotFinish()) exit(0);
     }
 
